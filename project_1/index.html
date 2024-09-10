@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Project 1</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+            text-align: center;
+        }
+        header {
+            background-color: #cf9325;
+            color: white;
+            padding: 1em 0;
+        }
+        h1 {
+            margin: 0;
+        }
+        section {
+            padding: 2em;
+        }
+        .project {
+            margin-bottom: 2em;
+        }
+        img {
+            width: 300px;
+            height: auto;
+            border-radius: 8px;
+            margin: 1em 0;
+        }
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 1em 0;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Project 1: Colorizing Prokudin-Gorskii Images</h1>
+    </header>
+
+    <section>
+
+        <div class="project">
+            <h2>Exploration of Historical Images</h2>
+            <img src="images/tobolsk.jpg" alt="Image">
+            <img src="images/unprocessed_tobolsk.jpg" alt="Image">
+            <p>In this project we take scans made by Prokudin-Gorskii and bring them together into a single color image.</p>
+            
+            <img src="images/melons.jpg" alt="Image">
+            <img src="images/cathedral.jpg" alt="Another Image">
+            <p>We divide the image into three parts, and then align the red and
+            green color channels with the blue channel. The alignment is done
+            by searching over cyclic shifts, done at progressively finer
+            scales. In this way we are able to align images that have
+            displacements on the order of hundreds of pixels.</p>
+
+            <img src="images/onion_church.jpg" alt="Image">
+            <img src="images/three_generations.jpg" alt="Image">
+
+            <p>The distance between the channels is computed as a frobenius
+            inner product of the internal pixels. Using the internal pixels
+            improved alignment greatly, as the signal from the inner product
+            can get polluted by high distances between border regions.</p>
+
+            <img src="images/emir.jpg" alt="Image">
+            <img src="images/church.jpg" alt="Image">
+
+            <p>Some images were sensitive to different hyperparameters in the
+            alignment algorithm. These two images in particular are aligned
+            correctly if we limit the coarse-graining threshold in the pyramid
+            recursion. However, with settings that gave good results for the
+            majority of the images, these two images are not properly
+            aligned.</p>
+
+
+            <img src="images/sculpture.jpg" alt="Image">
+            <img src="images/lady.jpg" alt="Image">
+
+            <img src="images/train.jpg" alt="Image">
+            <img src="images/harvesters.jpg" alt="Image">
+            <img src="images/icon.jpg" alt="Image">
+
+        </div>
+
+    </section>
+
+    <footer>
+    </footer>
+
+</body>
+</html>

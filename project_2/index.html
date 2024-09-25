@@ -63,10 +63,13 @@
 
             
             <p> We use the finite difference filters D_x = [1, -1], D_y = [1,
-            -1]^T to approximate the partial derivatives of the image, so as to
-            form the gradient, then we create a binary image from thresholding
+            -1]^T to approximate the partial derivatives of the image. We then
+            form the gradient, with entries in R^2, by stacking: [im * D_x, im * D_y].
+            Then we map each entry from R^2 to its norm. This norm of the
+            gradient is then used to create a binary image from thresholding
             the norm of the gradient. I found this threshold interactively
-            using a slider.
+            using a slider, which helped for an efficient workflow and also for
+            gaining an intuitive understanding.
             </p>
 
             <img src="images/edge_detected_cameraman.png" alt="Image">

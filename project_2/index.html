@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Project 1</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+            text-align: center;
+        }
+        header {
+            background-color: #cf9325;
+            color: white;
+            padding: 1em 0;
+        }
+        h1 {
+            margin: 0;
+        }
+        section {
+            padding: 2em;
+        }
+        .project {
+            margin-bottom: 2em;
+        }
+        img {
+            width: 200px;
+            height: auto;
+            border-radius: 8px;
+            margin: 1em 0;
+        }
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 1em 0;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Project 2: Fun with Frequencies</h1>
+    </header>
+
+    <section>
+
+        <div class="project">
+            <img src="images/blending_color.jpg" alt="Image">
+            <img src="images/blending_apple.png" alt="Image">
+
+            <p>In this project we investigate manipulating the different
+            frequency bands of an image, by implementing edge detection, image
+            sharpening, hybrid images, and multi-resolution image blending. </p>
+
+
+            <hr>
+            <h1> Edge Detection with the derivative </h1>
+
+            
+            <p> We use the finite difference filters D_x = [1, -1], D_y = [1,
+            -1]^T to approximate the partial derivatives of the image, so as to
+            form the gradient, then we create a binary image from thresholding
+            the norm of the gradient. I found this threshold interactively
+            using a slider.
+            </p>
+
+            <img src="images/edge_detected_cameraman.png" alt="Image">
+            <img src="images/edge_detected_shell.png" alt="Another Image">
+            <img src="images/edge_detected_cauliflower.png" alt="Another Image">
+
+            <img src="images/part_1.1_shell_plt.png" alt="Image" style="width: 100%">
+            <br>
+            <img src="images/part_1.1_cauliflower_plt.png" alt="Image" style="width: 100%">
+            <br>
+            <img src="images/part_1.1_interactive.png" alt="Image" style="width: 100%">
+            <br>
+            <br>
+
+
+            <hr>
+            <h1> Smoother edge detection </h1>
+
+            We next use the Derivative of Gaussian Filter [G * D_x, G * D_y] to get a smoother edge detector.
+            <br>
+            <img src="images/part_1.2_DoG.png" alt="Image" style="width: 100%">
+            <img src="images/DoG_filter_shell.png" alt="Image">
+            <img src="images/DoG_filter_cameraman.png" alt="Image">
+            <img src="images/DoG_filter_cauliflower.png" alt="Image">
+
+            <br>
+            We formed the Derivative of Gaussian filter by convolving a
+            gaussian with the finite difference operators D_x and D_y. Below
+            the various stages of the convolution are shown. Notably, the
+			numerical convolutions involved are seen to be approximately
+            associative (the derivative of the smoothed image is the same as
+            the convolution of the image and the DoG filter), with some
+            artifacts of the padding occuring in the top left row and column of
+            the image. In other words, 
+
+            <img src="images/part_1.2_plt.png" alt="Image" style="width: 100%">
+
+
+            <hr>
+            <h1> Sharpening </h1>
+
+
+
+            We sharpen images by increasing the pixel values of the high
+            frequencies. We obtain a high pass filtered copy of the image by
+            taking the difference between the original image and a low pass
+            filtered copy. Then we add back a scaled version of the high passed
+            image, to create a sharpening effect. Again, the amount to add is
+            heuristic, so we use a slider based interface to manually select an
+            appropriate value.
+
+            <br>
+            <img src="images/sharpening_shell.png" alt="Image">
+            <img src="images/sharpening_taj.png" alt="Image">
+            <img src="images/sharpening_color.png" alt="Image">
+
+
+            <br>
+            When we combine the entire operation into a single unsharp masking
+            filter we get the same results, as empirically seen in the plot
+            below and as checked in code.
+            <br>
+            <img src="images/part_2.1_sharpened_cauliflower.png" alt="Image" style="width: 100%">
+            <br>
+
+            <br>
+            When we try to sharpen a blurred image, we get interesting edge
+            artifacts, which come from losing the high frequency information
+            when the initial low pass filter is applied.
+
+            <br>
+            <img src="images/sharpend_blurred_shell.png" alt="Image" style="width: 100%">
+            <br>
+            <img src="images/high_alpha_resharpening_interesting_image.png" alt="Image" style="width: 100%">
+            <br>
+
+            
+
+            <hr>
+            <h1> Hybrid Images </h1>
+            Now, we look at hybrid images, which are formed by combining a low
+            passed image with a high passed image. If we do so in such a way
+            that respects visual gropuings, then we percieve different images
+            when we view from near as opposed to from far. This is due to the
+            increased spatial density of light receptors at the center of our
+            field of vision, which means that high spatial frequencies are only
+            percieved in the center of vision.
+
+            <br>
+            <img src="images/hybrid_img_taj.png" alt="Image" style="width: 50%">
+            <img src="images/hybrid_img_taj_1.png" alt="Image">
+            <img src="images/hybrid_img_nebula.png" alt="Image">
+            <img src="images/hybrid_img_shell.png" alt="Image">
+            <br>
+            <img src="images/hybrid_img_DerekPicture.png" alt="Image">
+            <br>
+            <img src="images/shell_nebula_hybrid.png" alt="Image" style="width: 100%">
+            <br>
+
+            I found that the task of creating hybrid images was very sensitive
+            to alignment differences. Thus I interactively set the paramaters
+            for the gaussian kernel involved in making the hybrid images. This
+            allowed me to select noise paramaters that gave the desired hybrid
+            image effect.
+
+            <br>
+            <br>
+            Briefly, we look at the spectral view of hybrid image formation
+            process. We can see that the smoothed image has its fourier
+            transform concentrated nearer the low frequencies, and the high
+            passed image has its fourier transform less concentrated near the
+            low frequencies than in the fourier transform of the original.
+            <br>
+            From the two following plots the fact that the fourier transform of
+            the sum is the sum of the fourier transforms is made evident. This
+            indeed follows from the linearity of the Fourier transform.
+
+            <br>
+            <img src="images/part_2.2_spectral.png" alt="Image">
+            <img src="images/derek_cat_hybrid_spectral.png" alt="Image" style=>
+            <br>
+
+
+            <hr>
+            <h1> Laplacian Stacks </h1>
+            We next turn to laplacian stacks and an application in image
+            blending. Laplacian stacks are formed from gaussian stacks by
+            taking the difference of succesive layers in the gaussian stack.
+            Thus each layer in a laplacian stack holds information about a
+            certain band of frequencies in the image. The last layer in the
+            laplacian stack is not a band passed image but rather a low passed
+            image. Finally, the total image is reconstructed by summing the
+            layers of the stack. The correctness of this reconstruction
+            procedure can be seen from the fact that this construction yeilds a
+            telescoping sum where all the terms cancel except for the original
+            image. A Laplacian stack is shown below:
+
+            <br>
+            <img src="images/laplacian_stack_nebula.png" alt="Image" style="width: 100%">
+            <br>
+
+            <hr>
+            <h1> Blending </h1>
+
+            Now, we reproduce a result from Burt and Adelsons paper "A
+            Multiresolution Spline With Application to Image Mosaics". The
+            paper discusses an approach to image blending that operates on the
+            different subbands indivisually. By using a sharper filter for the
+            high frequency bands we avoid having details pass over the maskin
+            boundary, and by using a blurred version of the filter for low
+            frequency bands we avoid the perception of an abrupt image mask.
+            We get the blurred verions of the filter simply with a gaussian stack.
+
+            Once the laplacian and gaussian stacks have been constructed, the
+            blending operation is done by performing the masking operation
+            layerwise in the three stacks, and then reconstructing the blended
+            image from the blended stacks.
+
+            We reproduce a plot that demonstrates this process for images of an
+            apple and an orange.
+            <br>
+            <img src="images/orapple_stacks.png" alt="Image" style="width: 100%">
+            <br>
+            In the above figure, the first three rows are layers (0, 2, 4) from
+            the corresponding laplacian stacks, and the final row is the image
+            reconstructed from the stacks. The Left column is the filter
+            pointwise multiplied with the apple, and the middle column is (1 -
+            filter) pointwise multiplied with the orange image. The right
+            column is the addition of the left two columns.
+
+            <br>
+            Now for some examples of blends:
+            <br>
+            <img src="images/blending_apple.png" alt="Image">
+            <img src="images/blending_orange.png" alt="Image">
+            <img src="images/blending_orange_horiz.png" alt="Image">
+            <br>
+            <img src="images/blending_color.jpg" alt="Image">
+            <img src="images/blending_color_circular_mask.png">
+            <img src="images/blending_anemone_1.png" alt="Image">
+            <img src="images/blending_anemone.png" alt="Image">
+            <img src="images/blending_shell.png" alt="Image">
+            <img src="images/blending_nebula.png" alt="Image">
+            <img src="images/color_nebula_stacks.png" alt="Image" style="width: 100%">
+
+
+        </div>
+
+    </section>
+
+    <footer>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Project 3</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+            text-align: center;
+        }
+        header {
+            background-color: #cf9325;
+            color: white;
+            padding: 1em 0;
+        }
+        h1 {
+            margin: 0;
+        }
+        section {
+            padding: 2em;
+        }
+        .project {
+            margin-bottom: 2em;
+        }
+        img {
+            width: 200px;
+            height: auto;
+            border-radius: 15px;
+            margin: 1em 0;
+        }
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 1em 0;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Project 3: Image warping / morphing </h1>
+    </header>
+
+    <section>
+
+        <div class="project">
+
+            <img src="images/morph_color__to__nebula.gif" alt="Image", style="width: 25%">
+
+            <p>In this project we implement image warping and experiment with
+            image morphing and finding average faces in a dataset.
+            <p>
+
+            <hr>
+            <h1> Defining Correspondences </h1>
+
+            <p> I built a lightweight selection tool that allows for selecting
+            corresponding points between two separate images.
+            </p>
+
+            <br>
+            <img src="images/selecting_correspondences_plt.png" alt="Image", style="width: 25%">
+            <br>
+
+            <hr>
+            <h1> Image interpolation </h1>
+            <p> In order to implement the image warping algorithm, I first
+            implemented a Bilinear interpolation algorithm that treats an image
+            as a function with domain in [0, 1]^2. This simplification of
+            coordinates simplifies indexing later in the warping algorithm. The
+            bilinear interpolation is implemented simply as two linear
+            interpolations: sampling our function at a location (x1, x2), is in
+            general not on a pixel value. So we look at the 4 neighboring pixel
+            values. Then we perform two interpolations horizontally, across the
+            top and across the bottom of the enclosing square, to approximate
+            the function value at x2. Then we perform a vertical linear
+            interpolation between these two values to finally find the value of
+            the bilinear interpolation at (x1, x2).
+            <p>
+
+            <hr>
+            <h1> Triangulating and Warping, and the midway face </h1>
+
+
+            <p>
+            Then, we use a Delaunay triangulation on the averages of the
+            corresponding points to partition the images into triangles. Now, to
+            compute a warped image we start with the coordinates of the regular
+            (h, w) grid in [0, 1]^2, and think of each one of these coordinates
+            as a "measurement location" where we are going to sample the image
+            to form a pixel value.
+            <p>
+
+            <p>
+            Now, each pixel lies in one of the triangles. And our
+            correspondences define maps between the triangles. A standard fact
+            tells us that there is a unique affine transformation that maps the
+            vertices of one nondegenerate triangle to another nondegenerate
+            triangle. We compute this affine transformation as a linear map in R^3 on an affine subspace.
+            P1 @ P0^{-1} (observe A P0 = P1 implies A = P1 P0^{-1}), where P1
+            and P0 are the 3x3 matrices representing the source and target
+            triangles lying on the affine subspace z = 1 in R^3, and then
+            projecting the points back down into R^2 for input into the linear
+            interpolation.
+            <p>
+
+            <p>
+            So we transform each pixel coordinate according to the affine
+            transformation defined by its enclosing triangle. And then we sample
+            from the interpolation with our transformed coordinates to obtain
+            the final warped image.
+            <p>
+
+            <p>
+            Here, we show a midway point in this computation:
+            <p>
+
+            <br>
+            <img src="images/mona_lisa_vermeer_half.png" alt="Image", style="width: 25%">
+            <br>
+
+            <hr>
+            <h1> Image Morph Sequences </h1>
+            <p> In order to morph between images, we perform a linear
+            interpolation from our source point set to our target point set. We
+            then warp both images to the points obtained in the interpolation,
+            and compute a weighted average of the two warped images, with
+            weight coming from the paramater in the linear interpolation.
+            <p>
+
+            <br>
+            <img src="images/morph_verbose_mona_lisa__to__vermeer_painting.gif" alt="Image", style="width: 25%">
+            <img src="images/morph_tunnel_view_oil__to__tunnel_view_photo.gif" alt="Image", style="width: 25%">
+            <img src="images/morph_tunnel_view_photo__to__tunnel_view_watercolor.gif" alt="Image", style="width: 25%">
+            <img src="images/cropped_morph_verbose_tunnel_view_oil__to__tunnel_view_photo.gif" alt="Image", style="width: 25%">
+            <br>
+
+            <hr>
+
+            <h1> Face Dataset Averaging </h1>
+            <p> Next, we look at finding an average face from an image dataset.
+            We use the FEI Face Database Spatially normalized frontal images,
+            and the provided manual alignment. We look at the subsets of the
+            faces in the dataset that are smiling and those that are not, and
+            we additionally divide the dataset up into those including glasses
+            and those that do not.
+
+            We then compute the average face for each of these four subsets. We
+            compute the average similarly as in the morph sequence, only now we
+            are warping annotated points to their average locations and then
+            taking the element wise averege of the warped images to give the
+            final average image in the dataset.
+            <br>
+
+            <img src="images/fei_average_face_nosmile_noglasses.png" alt="Image", style="width: 10%">
+            <img src="images/fei_average_face_smiling_noglasses.png" alt="Image", style="width: 10%">
+            <img src="images/fei_average_face_nosmile_glasses.png" alt="Image", style="width: 10%">
+            <img src="images/fei_average_face_smiling_glasses.png" alt="Image", style="width: 10%">
+
+            <hr>
+            <h1> Face Warping and Extrapolation </h1>
+            <p> Then I warp an image of myself into the geometry of the average
+            face, and I warp the average face into the geometry of my face.
+            Additionally, I display an animation of the warping of the average
+            face, but extrapolating beyond convex combinations of the
+            corresponding points. Due to medical reasons, I look straight ahead
+            with a slightly turned head (hence take photos with a slightly
+            turned head), and in these warpings the misalignment of my head is
+            particularly noticable.
+            <p>
+
+            <img src="images/my_face.png" alt="Image", style="width: 20%">
+            <img src="images/fei_average_face.png" alt="Image", style="width: 20%">
+            <br>
+            <img src="images/warped_warp_average_face.png" alt="Image", style="width: 20%">
+            <img src="images/warped_warp_my_face.png" alt="Image", style="width: 20%">
+            <br>
+            <img src="images/warp_average_face.gif" alt="Image", style="width: 40%">
+
+            <hr>
+            <h1> Continuous warping with differential equations. </h1>
+
+            <p>
+            Next, we look at performing continuous deformations to an image
+            with by letting the pixels sampling coordinates evolve according to
+            an ODE. This is interesting because of the connections between
+            differential equations and differential geometry. In this project,
+            I implement an interactive visualization of such transformations
+            with sliders that control the paramaters for the differential
+            equation that governs the image transformation.
+            <p>
+
+            <p>
+            A quadratic differential equation with terms given by the porduct of the coefficients of theta with the terms of (1 + xi + xj)(1 + xi + xj)
+            governs the image transformation. Furthermore, we impose a boundary
+            contition that ensures that the points on the edge of the image
+            remain stationary under the differential equation, since this produces more interesting results.
+            I simulated the ODE with a simple implementation of Eulers method.
+            <p>
+
+            <p>
+            In the future it will be intersting to explore more of this
+            connection, and potentially learnging differential equations that
+            correspond to particular image transformations (i.e. learn
+            differential equations that approximates some video)
+            <p>
+            <img src="images/diffeq_warp_color.gif" alt="Image", style="width: 25%">
+            <img src="images/diffeq_warp_slider.png" alt="Image", style="width: 25%">
+            <img src="images/diffeq_warp_spiral.gif" alt="Image", style="width: 25%">
+            <img src="images/diffeq_warp_color_1.gif" alt="Image", style="width: 25%">
+            <img src="images/diffeq_warp_color_2.gif" alt="Image", style="width: 25%">
+            <img src="images/diffeq_warp_spiral_2.gif" alt="Image", style="width: 25%">
+
+
+            <p>
+
+        </div>
+
+    </section>
+
+    <footer>
+    </footer>
+
+</body>
+</html>

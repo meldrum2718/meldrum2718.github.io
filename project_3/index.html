@@ -1,45 +1,54 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html> <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Project 3</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-            color: #333;
-            text-align: center;
-        }
-        header {
-            background-color: #cf9325;
-            color: white;
-            padding: 1em 0;
-        }
-        h1 {
-            margin: 0;
-        }
-        section {
-            padding: 2em;
-        }
-        .project {
-            margin-bottom: 2em;
-        }
-        img {
-            width: 200px;
-            height: auto;
-            border-radius: 15px;
-            margin: 1em 0;
-        }
-        footer {
-            background-color: #333;
-            color: white;
-            padding: 1em 0;
-        }
-    </style>
+
+  <style>
+    body {
+      background-color: #2a2a32;
+      color: #b0b0b0; /* Softer grey for text */
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    a {
+      color: #8bbdd9;
+    }
+    code {
+      background-color: #3a3a44;
+      color: #d1d1d1;
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+    pre {
+      background-color: #3a3a44;
+      color: #d1d1d1;
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    blockquote {
+      background-color: #3a3a44;
+      color: #d1d1d1;
+      padding: 1em;
+      border-left: 5px solid #8bbdd9;
+      border-radius: 4px;
+    }
+    h1, h2, h3 {
+      color: #4f709c;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+    }
+		.image-container {
+      text-align: center;
+      margin: 10px 0;
+    }
+		img {
+			max-width: 80%;    /* Limits the maximum width of images */
+			height: auto;      /* Maintains aspect ratio */
+			margin: 10px; /* Adds margin of 10px on top and bottom, and centers the image horizontally */
+			display: inline-block;     /* Ensures that the margin auto will work for centering */
+		}
+  </style>
 </head>
 <body>
 
@@ -51,25 +60,29 @@
 
         <div class="project">
 
-            <img src="images/morph_color__to__nebula.gif" alt="Image", style="width: 25%">
+            <div class="image-container">
+              <img src="images/morph_color__to__nebula.gif" alt="Image", style="width: 25%">
+            </div>
 
             <p>In this project we implement image warping and experiment with
             image morphing and finding average faces in a dataset.
             <p>
 
             <hr>
-            <h1> Defining Correspondences </h1>
+            <h3> Defining Correspondences </h3>
 
             <p> I built a lightweight selection tool that allows for selecting
             corresponding points between two separate images.
             </p>
 
             <br>
-            <img src="images/selecting_correspondences_plt.png" alt="Image", style="width: 25%">
+            <div class="image-container">
+              <img src="images/selecting_correspondences_plt.png" alt="Image">
+            </div>
             <br>
 
             <hr>
-            <h1> Image interpolation </h1>
+            <h3> Image interpolation </h3>
             <p> In order to implement the image warping algorithm, I first
             implemented a Bilinear interpolation algorithm that treats an image
             as a function with domain in [0, 1]^2. This simplification of
@@ -85,7 +98,7 @@
             <p>
 
             <hr>
-            <h1> Triangulating and Warping, and the midway face </h1>
+            <h3> Triangulating and Warping, and the midway face </h3>
 
 
             <p>
@@ -122,11 +135,14 @@
             <p>
 
             <br>
-            <img src="images/mona_lisa_vermeer_half.png" alt="Image", style="width: 25%">
+
+            <div class="image-container">
+              <img src="images/mona_lisa_vermeer_half.png" alt="Image">
+            </div>
             <br>
 
             <hr>
-            <h1> Image Morph Sequences </h1>
+            <h3> Image Morph Sequences </h3>
             <p> In order to morph between images, we perform a linear
             interpolation from our source point set to our target point set. We
             then warp both images to the points obtained in the interpolation,
@@ -135,15 +151,19 @@
             <p>
 
             <br>
-            <img src="images/morph_verbose_mona_lisa__to__vermeer_painting.gif" alt="Image", style="width: 25%">
-            <img src="images/morph_tunnel_view_oil__to__tunnel_view_photo.gif" alt="Image", style="width: 25%">
-            <img src="images/morph_tunnel_view_photo__to__tunnel_view_watercolor.gif" alt="Image", style="width: 25%">
-            <img src="images/cropped_morph_verbose_tunnel_view_oil__to__tunnel_view_photo.gif" alt="Image", style="width: 25%">
+
+            <div class="image-container">
+              <img src="images/morph_verbose_mona_lisa__to__vermeer_painting.gif" alt="Image", style="width: 25%">
+              <img src="images/cropped_morph_verbose_tunnel_view_oil__to__tunnel_view_photo.gif" alt="Image", style="width: 25%">
+              <br>
+              <img src="images/morph_tunnel_view_oil__to__tunnel_view_photo.gif" alt="Image", style="width: 25%">
+              <img src="images/morph_tunnel_view_photo__to__tunnel_view_watercolor.gif" alt="Image", style="width: 25%">
+            </div>
             <br>
 
             <hr>
 
-            <h1> Face Dataset Averaging </h1>
+            <h3> Face Dataset Averaging </h3>
             <p> Next, we look at finding an average face from an image dataset.
             We use the FEI Face Database Spatially normalized frontal images,
             and the provided manual alignment. We look at the subsets of the
@@ -158,13 +178,15 @@
             final average image in the dataset.
             <br>
 
-            <img src="images/fei_average_face_nosmile_noglasses.png" alt="Image", style="width: 10%">
-            <img src="images/fei_average_face_smiling_noglasses.png" alt="Image", style="width: 10%">
-            <img src="images/fei_average_face_nosmile_glasses.png" alt="Image", style="width: 10%">
-            <img src="images/fei_average_face_smiling_glasses.png" alt="Image", style="width: 10%">
+            <div class="image-container">
+              <img src="images/fei_average_face_nosmile_noglasses.png" alt="Image", style="width: 10%">
+              <img src="images/fei_average_face_smiling_noglasses.png" alt="Image", style="width: 10%">
+              <img src="images/fei_average_face_nosmile_glasses.png" alt="Image", style="width: 10%">
+              <img src="images/fei_average_face_smiling_glasses.png" alt="Image", style="width: 10%">
+            </div>
 
             <hr>
-            <h1> Face Warping and Extrapolation </h1>
+            <h3> Face Warping and Extrapolation </h3>
             <p> Then I warp an image of myself into the geometry of the average
             face, and I warp the average face into the geometry of my face.
             Additionally, I display an animation of the warping of the average
@@ -175,16 +197,18 @@
             particularly noticable.
             <p>
 
-            <img src="images/my_face.png" alt="Image", style="width: 20%">
-            <img src="images/fei_average_face.png" alt="Image", style="width: 20%">
-            <br>
-            <img src="images/warped_warp_average_face.png" alt="Image", style="width: 20%">
-            <img src="images/warped_warp_my_face.png" alt="Image", style="width: 20%">
-            <br>
-            <img src="images/warp_average_face.gif" alt="Image", style="width: 40%">
+            <div class="image-container">
+              <img src="images/my_face.png" alt="Image", style="width: 20%">
+              <img src="images/fei_average_face.png" alt="Image", style="width: 20%">
+              <br>
+              <img src="images/warped_warp_average_face.png" alt="Image", style="width: 20%">
+              <img src="images/warped_warp_my_face.png" alt="Image", style="width: 20%">
+              <br>
+              <img src="images/warp_average_face.gif" alt="Image", style="width: 40%">
+            </div>
 
             <hr>
-            <h1> Continuous warping with differential equations. </h1>
+            <h3> Continuous warping with differential equations. </h3>
 
             <p>
             Next, we look at performing continuous deformations to an image
@@ -210,12 +234,16 @@
             correspond to particular image transformations (i.e. learn
             differential equations that approximates some video)
             <p>
-            <img src="images/diffeq_warp_color.gif" alt="Image", style="width: 25%">
-            <img src="images/diffeq_warp_slider.png" alt="Image", style="width: 25%">
-            <img src="images/diffeq_warp_spiral.gif" alt="Image", style="width: 25%">
-            <img src="images/diffeq_warp_color_1.gif" alt="Image", style="width: 25%">
-            <img src="images/diffeq_warp_color_2.gif" alt="Image", style="width: 25%">
-            <img src="images/diffeq_warp_spiral_2.gif" alt="Image", style="width: 25%">
+
+
+            <div class="image-container">
+              <img src="images/diffeq_warp_color.gif" alt="Image", style="width: 25%">
+              <img src="images/diffeq_warp_slider.png" alt="Image", style="width: 25%">
+              <img src="images/diffeq_warp_spiral.gif" alt="Image", style="width: 25%">
+              <img src="images/diffeq_warp_color_1.gif" alt="Image", style="width: 25%">
+              <img src="images/diffeq_warp_color_2.gif" alt="Image", style="width: 25%">
+              <img src="images/diffeq_warp_spiral_2.gif" alt="Image", style="width: 25%">
+            </div>
 
 
             <p>

@@ -1,0 +1,181 @@
+<!DOCTYPE html> <html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Project 4</title>
+
+  <style>
+    body {
+      background-color: #2a2a32;
+      color: #b0b0b0; /* Softer grey for text */
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    a {
+      color: #8bbdd9;
+    }
+    code {
+      background-color: #3a3a44;
+      color: #d1d1d1;
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+    pre {
+      background-color: #3a3a44;
+      color: #d1d1d1;
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    blockquote {
+      background-color: #3a3a44;
+      color: #d1d1d1;
+      padding: 1em;
+      border-left: 5px solid #8bbdd9;
+      border-radius: 4px;
+    }
+    h1, h2, h3 {
+      color: #4f709c;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+    }
+		.image-container {
+      text-align: center;
+      margin: 10px 0;
+    }
+		img {
+			max-width: 80%;    /* Limits the maximum width of images */
+			height: auto;      /* Maintains aspect ratio */
+			margin: 10px; /* Adds margin of 10px on top and bottom, and centers the image horizontally */
+			display: inline-block;     /* Ensures that the margin auto will work for centering */
+		}
+  </style>
+</head>
+<body>
+
+    <header>
+        <h1>Project 4: Image warping and Mosaicing </h1>
+    </header>
+
+    <section>
+
+        <div class="project">
+
+            <p>In this project we continue to work with warping images. Now,
+            rather than considering affine transformations of triangles, we are
+            considering global homographies that model a changing the viewing
+            angle.
+
+            We first capture images with the camera pointing in different
+            directions, from the same location. These images are all capturing
+            the same light field. The task now is to align and join the images
+            to create an image with a wider field of view.
+
+            The original images I used are here:
+
+            <br>
+            <div class="image-container">
+              <img src="images/books_left.png" alt="Image", style="width: 25%">
+              <img src="images/books_middle.png" alt="Image", style="width: 25%">
+              <img src="images/books_right.png" alt="Image", style="width: 25%">
+            </div>
+            <br>
+
+
+
+            <p>
+
+            <hr>
+            <h3> Homographies and Image Rectification </h3>
+
+            <p> Before we move to image stitching, we first look at image
+            rectification, which is the task of applying the homography that
+            rectifices a selected rectangle. We compute this homography by
+            solving the least squares solution to a certain linear system that
+            describes how points transform under the homography. The key thing
+            here is that we are using projective coordinates which allow us to
+            describe how images change as the image sensor is rotated. These
+            projective coordinates are very interesting and connected to some
+            math that I would like to learn about. The equation we start with
+            is
+
+            <br>
+            [wx_i', wy_i', w] = H[x_i, y_i, 1]           (*)
+            <br>
+
+            This is an example of computing with equivalence classes, as there
+            is an entire 1d subspace of R^3 that we make correspond to a single
+            point in R^2. From (*) we write:
+
+            <br>
+            x_i' = (h_11 x_i + h_12 x_j + h_12) / (h_31 x_i + h_32 x_j + h_33)
+            <br>
+            and
+            <br>
+            x_j' = (h_21 x_i + h_22 x_j + h_22) / (h_31 x_i + h_32 x_j + h_33)
+            <br>
+
+            Then organizing this into a system of equations, we have:
+            <br>
+            [-x_i, -x_j,    -1,    0,    0,  0, x_i' x_i, x_j' x_j, x_i'] vec(H)^T = 0
+            <br>
+            [   0,    0,     0, -x_i, -x_j, -1, x_j' x_i, x_j' x_j, x_j'] vec(H)^T = 0
+            <br>
+
+
+            <br>
+
+            Then we stack these equations to get a system that we solve by least squares.
+
+            <br>
+
+            In the case of image rectification, we can look at the case where
+            we have four points (x_i, x_j), and compute the homography that
+            takes these points to the vertices of the unit square.
+            <br>
+            Below, we look at an example of rectifying an off center rectangle:
+
+            </p>
+
+            <br>
+            <div class="image-container">
+              <img src="images/books_rectified.png" alt="Image">
+              <img src="images/rectified_lakes.png" alt="Image">
+            </div>
+            <br>
+
+            <hr>
+
+            <p>
+            Now we look at stitching together images. We leverage the image
+            blending code from project 2, so the task becomes simply
+            homographically warping images to corresponding points and then
+            blending. This task forced me to think in depth about the bounds
+            and scalings of the transformations involved. Inded the final
+            result requires setting the bounds for the grid which we use for
+            sampling the respective interpolations as the extreme points of
+            where the corners of the original images get warped to. This
+            ensures that we are sampling an area large enough to capture all of
+            the information provided by each image in the panoramaa.
+            kOne challenge was determining the bounds on the grid to
+            use as our sampling locations for the respective interpolations.
+            The results of a few blends are displayed below:
+            <p>
+
+
+            <div class="image-container">
+              <img src="images/stitched__centered_at_books_middle.png" alt="Image", style="width: 40%">
+              <img src="images/stitched_mountain.png" alt="Image", style="width: 40%">
+            </div>
+            <br>
+
+            <hr>
+
+        </div>
+
+    </section>
+
+    <footer>
+    </footer>
+
+</body>
+</html>

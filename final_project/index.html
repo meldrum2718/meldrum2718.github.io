@@ -1,0 +1,663 @@
+<!DOCTYPE html> <html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Project 5</title>
+
+  <style>
+    body {
+      background-color: #2a2a32;
+      color: #b0b0b0; /* Softer grey for text */
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    a {
+      color: #8bbdd9;
+    }
+    code {
+      background-color: #3a3a44;
+      color: #d1d1d1;
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+    pre {
+      background-color: #3a3a44;
+      color: #d1d1d1;
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    blockquote {
+      background-color: #3a3a44;
+      color: #d1d1d1;
+      padding: 1em;
+      border-left: 5px solid #8bbdd9;
+      border-radius: 4px;
+    }
+    h1, h2, h3 {
+      color: #4f709c;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+    }
+		.image-container {
+      text-align: center;
+      margin: 10px 0;
+    }
+	img {
+		max-width: 80%;    /* Limits the maximum width of images */
+		height: auto;      /* Maintains aspect ratio */
+		margin: 10px; /* Adds margin of 10px on top and bottom, and centers the image horizontally */
+		display: inline-block;     /* Ensures that the margin auto will work for centering */
+	}
+	.replay-on-hover {
+		display: block;
+		margin: 20px auto; /* Center the video */
+		max-width: 90%;    /* Limit the video size */
+		border-radius: 8px; /* Rounded corners for the video */
+	}
+  </style>
+</head>
+<body>
+
+    <header>
+        <h1>Final Project: Neural Radiance Fields </h1>
+    </header>
+
+    <section>
+
+        <div class="project">
+
+            <p> In this project we implement Neural Radiance Fields, a technique for parameterizing a radiance field with a neural network.
+
+            <br>
+
+
+            <p>
+
+            <hr>
+            <h3> Part 1: The 2d Case </h3>
+
+            We first look at the 2d case. We train a simple Multilayer
+            Perceptron (MLP) to learn the RGB pixel values from a 2d coordinate
+            (i, j) in the unit square [0, 1]^2, structured as shown below:
+
+            <br>
+            <div class="image-container">
+              <img src="images/mlp_arch.png" alt="Image", style="width: 55%">
+            </div>
+            <br>
+
+
+
+            We use a sinusoidal positional encoding (PE) at the start of the
+            network to project the input 2 dimensional coordinate (x, y) into
+            2*(2*L + 1) dimensional space, with the coordinates of the higher
+            dimensional representation given by [x, y, sin(2^0 pi x), cos(2^0
+            pi x), sin(2^0 pi y), sin(22^1 pi x), sin(2^1 pi x), cos(2^1 pi x),
+            sin(2^1 pi y), sin(2^1 pi x), ...]. This enables the network to see
+            high frequency (high precision) information about the coordinates.
+            Without this positional encoding, the network does not learn fine
+            grained spatial structure accurately, as we shall see below.
+
+
+            <br>
+            <br>
+
+            Once the MLP has been trained on an image, we can use it to
+            reconstruct the image by making predictions on a mesh over the unit
+            square. Thus we are training the MLP to parameterize a function
+            from the unit square to the unit cube. It is interesting to note
+            that this is precisely the task that we used bilinear image
+            interpolation for in previous projects such as face warping and
+            image stitching, only now with a more flexible parameterization.
+            <br>
+            <br>
+
+            <br>
+            <br>
+
+
+            This is the target image that we use for this section.
+            <br>
+            <div class="image-container">
+              <img src="images/fox.jpg" alt="Image", style="width: 55%">
+            </div>
+            <br>
+
+            This is a reconstruction by a neural network:
+            <br>
+            <div class="image-container">
+              <img src="images/fox_pred.png" alt="Image", style="width: 55%">
+            </div>
+            <br>
+
+
+
+            Now we look at some examples of the image that the network learns.
+            Each of the below plots shows the networks predictions at different
+            stages of the training process.
+            <br>
+
+            We additionally show the training loss curves, as well as the peak
+            signal to noise ratio (PSNR), computed as 10*log(1/mse). Where mse is the mean squared error training loss.
+
+            <br>
+            <br>
+
+            We fix 256 hidden channels, 2 layers, training for 1000 steps
+            with batch size of 10,000. We vary the positional encoding
+            dimension, indexed by L.
+            <br>
+            <br>
+            With L=10:
+            <br>
+            <div class="image-container">
+              <img src="images/preds_L10_dh_256_nl2_ns1000_bs10000.png" alt="Image", style="width: 100%">
+              <img src="images/loss_L10_dh_256_nl2_ns1000_bs10000.png" alt="Image", style="width: 55%">
+            </div>
+            <br>
+
+
+            <br>
+            <br>
+            With L=3:
+            <br>
+            <div class="image-container">
+              <img src="images/preds_L3_dh_256_nl2_ns1000_bs10000.png" alt="Image", style="width: 100%">
+              <img src="images/loss_L3_dh_256_nl2_ns1000_bs10000.png" alt="Image", style="width: 55%">
+            </div>
+            <br>
+
+            <br>
+            <br>
+            With L=0:
+            <br>
+            <div class="image-container">
+              <img src="images/preds_L3_dh_256_nl2_ns1000_bs10000.png" alt="Image", style="width: 100%">
+              <img src="images/loss_L3_dh_256_nl2_ns1000_bs10000.png" alt="Image", style="width: 55%">
+            </div>
+            <br>
+
+            This demonstrates that the positional encoding is indeed helping the network to work with higher spatial frequencies.
+
+            <br>
+            <br>
+            <br>
+
+            Now we fix L=10, and vary the number of hidden channels.
+
+            <br>
+            <br>
+            With 256 hidden channels:
+            <br>
+            <div class="image-container">
+              <img src="images/preds_L10_dh_256_nl2_ns1000_bs10000.png" alt="Image", style="width: 100%">
+              <img src="images/loss_L10_dh_256_nl2_ns1000_bs10000.png" alt="Image", style="width: 55%">
+            </div>
+            <br>
+
+
+            <br>
+            <br>
+            With 64 hidden channels:
+            <br>
+            <div class="image-container">
+              <img src="images/preds_L10_dh_64_nl2_ns1000_bs10000.png" alt="Image", style="width: 100%">
+              <img src="images/loss_L10_dh_64_nl2_ns1000_bs10000.png" alt="Image", style="width: 55%">
+            </div>
+            <br>
+
+            <br>
+            <br>
+            With 16 hidden channels:
+            <br>
+            <div class="image-container">
+              <img src="images/preds_L10_dh_16_nl2_ns1000_bs10000.png" alt="Image", style="width: 100%">
+              <img src="images/loss_L10_dh_16_nl2_ns1000_bs10000.png" alt="Image", style="width: 55%">
+            </div>
+            <br>
+
+
+            <br>
+            <br>
+            With 8 hidden channels:
+            <br>
+            <div class="image-container">
+              <img src="images/preds_L10_dh_8_nl2_ns1000_bs10000.png" alt="Image", style="width: 100%">
+              <img src="images/loss_L10_dh_8_nl2_ns1000_bs10000.png" alt="Image", style="width: 55%">
+            </div>
+            <br>
+
+            <br>
+            <br>
+            With 4 hidden channels:
+            <br>
+            <div class="image-container">
+              <img src="images/preds_L10_dh_4_nl2_ns1000_bs10000.png" alt="Image", style="width: 100%">
+              <img src="images/loss_L10_dh_4_nl2_ns1000_bs10000.png" alt="Image", style="width: 55%">
+            </div>
+            <br>
+
+            <br>
+            <br>
+            With 2 hidden channels:
+            <br>
+            <div class="image-container">
+              <img src="images/preds_L10_dh_2_nl2_ns1000_bs10000.png" alt="Image", style="width: 100%">
+              <img src="images/loss_L10_dh_2_nl2_ns1000_bs10000.png" alt="Image", style="width: 55%">
+            </div>
+            <br>
+
+
+            Here we can see that as the number of hidden channels goes to one, the representational power of the network is greatly reduced.
+
+
+            <hr>
+
+            <br>
+            <br>
+            Below we see the training process on another image
+            <br>
+            <div class="image-container">
+              <img src="images/preds_nebula.png" alt="Image", style="width: 100%">
+              <img src="images/loss_nebula.png" alt="Image", style="width: 55%">
+            </div>
+            <br>
+
+
+
+            <hr>
+            <h3> Sampling from DeepFloyd </h3>
+
+            First, we look at some samples obtained from DeepFloyd, using the
+            pre-canned sampling implementation provided through the Hugging
+            Face Diffusers library.
+
+            Each of the three images below shows samples from DeepFloyd,
+            obtained with 10, 20, and 100 steps of iterative denoising
+            respectively. We can see that as the number of denoising steps is
+            increased, the model produces samples with higher detail. This
+            reflects the fact that more denoising steps gives the model time to
+            make more precise steps along the trajectory from noise to clean image.
+
+            <br>
+            <div class="image-container">
+              <img src="images/floyd_output_1st_deliverable__num_inf_steps_10.png" alt="Image", style="width: 55%">
+              <img src="images/floyd_output_1st_deliverable__num_inf_steps_20.png" alt="Image", style="width: 55%">
+              <img src="images/floyd_output_1st_deliverable__num_inf_steps_100.png" alt="Image", style="width: 55%">
+            </div>
+            <br>
+
+
+
+            <hr>
+            <h3> Various denoising approaches </h3>
+
+            Now we look at an example of the forward process, and compare the denoising results given with various approaches.
+
+            <br>
+            <div class="image-container">
+              <img src="images/campanile_fwd_process.png" alt="Image", style="width: 55%">
+            </div>
+            <br>
+
+            Given that the forward process consists of adding gaussian noise to
+            the image, we might try performing a gaussian blur on the noisy
+            images. This turns out to not give good results, which makes sense
+            because we are losing information in both the noising and the
+            denoising procedures in this case.
+
+
+            <br>
+            <div class="image-container">
+              <img src="images/classical_denoising.png" alt="Image", style="width: 55%">
+            </div>
+            <br>
+
+
+            Next, we use DeepFloyd to predict the noise added to the image in
+            one shot. This relative success of this approach is a testament to
+            the expressivity of the pretrained model. It recovers a decent
+            looking image, but is lacking details, particularly for higher noise levels such as at t=750.
+
+            <br>
+            <div class="image-container">
+              <img src="images/one_step_denoising.png" alt="Image", style="width: 55%">
+            </div>
+            <br>
+
+
+            Now, we use DeepFloyd to perform an iterative denoising process.
+            DeepFloyd gives us a prediction of the clean image. We then use
+            this prediction to interpolate between the noisy image and the
+            clean estimate given by the model. Then we repeat this process,
+            each time taking only a small step in the direction of the clean
+            estimate. As this process continues, the model is thus given many
+            chances to estimate the clean image, and it eventually converges to
+            a much more detailed output.
+
+
+            <br>
+            <div class="image-container">
+              <img src="images/iterative_denoising_traj.png" alt="Image", style="width: 55%">
+              <img src="images/various_denoising_methods.png" alt="Image", style="width: 55%">
+            </div>
+            <br>
+
+
+            <hr>
+            <h3> Sampling from DeepFloyd again </h3>
+
+            Now that we have an iterative denoising procedure, we can apply it
+            to samples of pure noise. The results are reasonable but not
+            particularly sharp.
+
+            <br>
+            <div class="image-container">
+              <img src="images/some_deepfloyd_samples.png" alt="Image", style="width: 55%">
+            </div>
+            <br>
+
+            DeepFloyd is trained with a conditioning signal, so that text input
+            can be given to guide the trajectory. The above images were
+            generated with the conditioning signal of "a high quality photo".
+            To achieve better results, we can use <a href="https://arxiv.org/abs/2207.12598">classifier free guidance</a>, 
+            where at each step of the denoising process we first obtain two
+            noise estimates from the model, one unconditional, and one
+            conditional, and then take a step in the direction given by
+            extrapolating towards the conditional estimate (in contrast to
+            interpolating between the two estimates). This gives qualitatively
+            more realistic and vibrant generations.
+
+            <br>
+            <div class="image-container">
+              <img src="images/some_floyd_cfg_samples.png" alt="Image", style="width: 55%">
+            </div>
+            <br>
+
+
+            <hr>
+            <h3> Image to image Translation </h3>
+
+            Now we implement the <a href="https://arxiv.org/abs/2207.12598">SDEdit</a> algorithm, which
+            stochastically edits an image by adding noise to our original image
+            and then using the demoiser to obtain a new image. When we add only
+            a small amount of noise, we obtain a similar image, but as we add
+            more noise we obtain more drastically edited images.
+
+            We can also use this technique to map from a simple drawing to a more realistic image, as shown below.
+
+            <br>
+            <div class="image-container">
+              <img src="images/sdedit_campanile.png" alt="Image", style="width: 55%">
+              <img src="images/sdedit_cartoon_fish.png" alt="Image", style="width: 55%">
+              <img src="images/sdedit_horse_drawing.png" alt="Image", style="width: 55%">
+              <img src="images/sdedit_cartoon_drawing.png" alt="Image", style="width: 55%">
+            </div>
+            <br>
+
+
+            Additionally, we can condition the denoiser to generate images in a
+            new direction. Shown below is the result of conditioning with the text prompts of "a rocket", and "an oil painting of an old man"
+
+
+            <br>
+            <div class="image-container">
+              <img src="images/campanile_rocket.png" alt="Image", style="width: 55%">
+              <img src="images/tree_rocket.png" alt="Image", style="width: 55%">
+              <img src="images/tree_old_man.png" alt="Image", style="width: 55%">
+            </div>
+            <br>
+
+
+
+
+
+
+            Next we experiment with <a href="http://graphics.cs.cmu.edu/projects/scene-completion/">inpainting</a>,
+            where we mask out a portion of the original image and fill in the
+            masked region with the diffusion process. At each step of the
+            denoising process we overwrite the unmasked region of the image
+            with an appropriately noised version of the original image, thus
+            ensuring that the output matches the original image in the unmasked
+            regions.
+
+
+            <br>
+            <div class="image-container">
+              <img src="images/campanile_inpainted.png" alt="Image", style="width: 55%">
+              <img src="images/campanile_boo_yah.png" alt="Image", style="width: 55%">
+            </div>
+            <br>
+
+
+
+            Next we experiment with <a
+            href="https://dangeng.github.io/visual_anagrams/">visual
+            anagrams</a>, an beautifully simple technique for creating a
+            stimulating visual effect. In this case, at each step of the
+            denoising process we create two noise estimates, conditioned on two
+            different text prompts, and then take a step in the direction of
+            the average the two noise estimates. The catch is that one of our
+            noise estimates is obtained on a flipped version of the image. The
+            result is that the final image has two different visual meanings
+            when viewed right side up or upside down.
+
+            Below we see images of people sitting around a campfire from one
+            orientation, and when looked at upside down they are images of a
+            man, a man wearing a hat, and a dog.
+
+
+            <br>
+            <div class="image-container">
+              <img src="images/old_man_campfire_anagram.png" alt="Image", style="width: 50%">
+              <img src="images/hat_man_campfire.png" alt="Image", style="width: 50%">
+              <img src="images/dog_campfire.png" alt="Image", style="width: 50%">
+            </div>
+            <br>
+
+
+            To finish out this first part of the project, we experiment with <a
+                href="https://dangeng.github.io/visual_anagrams/">factorized
+                diffusion</a>,
+            a technique for creating hybrid images (which we
+            also explored in <a
+                href="https://meldrum2718.github.io/project_2/">project 2</a>
+            of this class). Similar to the approach taken for creating visual
+            anagrams, factorized diffusion proceeds by obtaining two estimates
+            at each stage of the denoising process, now instead of passing
+            rotated versions of the intermediate images through the denoiser,
+            we pass low and high pass filtered images through the denoiser. The
+            idea is that one noise estimate denoises the low frequency components
+            of the image according to one conditioning signal, and the other
+            noise estimate denoises the high frequency components of the image
+            with the other conditioning signal.
+
+            In practice I found this to be a fairly unrobust process, with only a few of the many samples giving the desired results.
+
+            <br>
+            <div class="image-container">
+              <img src="images/hybrid_example.png" alt="Image", style="width: 50%">
+              <img src="images/rocket_waterfall.png" alt="Image", style="width: 50%">
+            </div>
+            <br>
+
+            <hr>
+            <h2> Implementing and training a diffusion model for MNIST digits </h2>
+
+            Now that we have explored some of what diffusion models are capable
+            of, we turn to the task of implementing and training a diffusion
+            model from scratch. We follow an outline provided by the CS180
+            staff, following the <a href="https://arxiv.org/abs/2006.11239">DDPM</a> paper.
+
+            We implement a tiny UNet which we use as our denoiser throughout.
+            The figure below, provided by the CS180 staff, outlines the
+            unconditional UNet architecture.
+
+            <br>
+            <div class="image-container">
+              <img src="images/simple_unet_arch.png" alt="Image", style="width: 50%">
+            </div>
+            <br>
+
+            Next we visualize adding variable amounts of noise to images from
+            the MNIST dataset. This constitutes our training data.
+
+            <br>
+            <div class="image-container">
+              <img src="images/mnsit_noising_process.png" alt="Image", style="width: 50%">
+            </div>
+            <br>
+
+            First we train the unconditional UNet to recover images after
+            adding a fixed amount of noise (sigma=0.5).
+
+
+            <br>
+            <div class="image-container">
+              <img src="images/uncond_unet_train_curve.png" alt="Image", style="width: 50%">
+            </div>
+            <br>
+
+
+            We can see that the model learns well to reconstruct the original
+            images. Below is the predictions of the model after going through 1
+            and then 5 epochs of training.
+
+            <br>
+            <div class="image-container">
+              <img src="images/epoch0_uncond_unet_preds.png" alt="Image", style="width: 40%">
+              <img src="images/epoch4_uncond_unet_preds.png" alt="Image", style="width: 40%">
+            </div>
+            <br>
+
+            We then look at how the model handles out of distribution inputs,
+            by passing in inputs with varying levels of noise. We can see that
+            the model is not adequate for denoising images with larger amounts
+            of noise than it saw in its training data.
+
+            <br>
+            <div class="image-container">
+              <img src="images/uncond_unet_out_of_dist_test.png" alt="Image", style="width: 50%">
+            </div>
+            <br>
+
+            The fact that the model is unable to work with varying noise levels
+            means that we can not use this implementation for the iterative
+            denoising trajectory that we wish to simulate for novel generation
+            from pure noise.
+            <br>
+            <br>
+
+            To rectify this issue, we introduce a time conditioning into the
+            UNet, so that we may perform iterative denoising by passing in a
+            time parameter into the UNet during the denoising process, and
+            training on variable levels of noise. Following the DDPM paper, the
+            time parameter corresponds to differing amounts of noise. This
+            enables the model to generate coherent predictions along the entire
+            trajectory from noise to clean image.
+
+            Time conditional DDPM training curve:
+
+            <br>
+            <div class="image-container">
+              <img src="images/tcond_ddpm_train_curve.png" alt="Image", style="width: 50%">
+            </div>
+            <br>
+
+            We can see that now our time conditional UNet is able to generate
+            clean images starting from pure noise, with varying degrees of
+            success. By the end of the training, the model generates images
+            that either are recognizable as handwritten digits, or are
+            plausibly close.
+
+            Below, we visualize the time conditional DDPM sampling
+            trajectories after 1, 6, 11, 16, and 20 epochs of training. Mouse
+            over to run the animations.
+
+
+			<video class="replay-on-hover" src="images/tcond_ddpm_sample_trajectories_epoch0.mp4"></video>
+			<video class="replay-on-hover" src="images/tcond_ddpm_sample_trajectories_epoch5.mp4"></video>
+			<video class="replay-on-hover" src="images/tcond_ddpm_sample_trajectories_epoch10.mp4"></video>
+			<video class="replay-on-hover" src="images/tcond_ddpm_sample_trajectories_epoch15.mp4"></video>
+			<video class="replay-on-hover" src="images/tcond_ddpm_sample_trajectories_epoch19.mp4"></video>
+
+
+            To further improve the model, we additionally introduce a class
+            conditioning input to the UNet. Both the time and class
+            conditioning signals are input into the latent representations in
+            the center of the model.
+
+            In the below class conditional training curve, we can see that the training loss is improved once we introduce the class conditioning, 
+
+            <br>
+            <div class="image-container">
+              <img src="images/ccond_ddpm_train_curve.png" alt="Image", style="width: 50%">
+            </div>
+            <br>
+
+            Now we look visualize the final class conditional model
+            generations. The below plots are after 1, 6, 11, 16, and 20 epochs
+            of training. Again, mouse over to run the animations.
+
+			<video class="replay-on-hover" src="images/ccond_ddpm_sample_trajectories_epoch0.mp4"></video>
+			<video class="replay-on-hover" src="images/ccond_ddpm_sample_trajectories_epoch5.mp4"></video>
+			<video class="replay-on-hover" src="images/ccond_ddpm_sample_trajectories_epoch10.mp4"></video>
+			<video class="replay-on-hover" src="images/ccond_ddpm_sample_trajectories_epoch15.mp4"></video>
+			<video class="replay-on-hover" src="images/ccond_ddpm_sample_trajectories_epoch19.mp4"></video>
+
+            The samples here are qualitatively more coherent than the case
+            where we only use a time conditioning signal, and evidently the
+            class conditioning signal appropriately guides the generation to
+            the requested digit, so we are content.
+
+            <br>
+            <br>
+            <br>
+            <br>
+
+            <hr>
+
+            <br>
+            <br>
+
+            This project was far and away my favorite of the semester.
+            Diffusion models are an exciting topic which I am excited to
+            explore further in the near future!
+
+            <br>
+            <br>
+            <br>
+
+
+        </div>
+
+    </section>
+
+    <footer>
+    </footer>
+
+
+
+    <script>
+        // Function to add replay-on-hover behavior
+        function enableReplayOnHover(className) {
+            const videos = document.querySelectorAll(`.${className}`);
+            videos.forEach(video => {
+                video.addEventListener('ended', () => {
+                    video.pause(); // Pause at the end
+                });
+                video.addEventListener('mouseover', () => {
+                    video.currentTime = 0; // Reset to the start
+                    video.play();          // Play the video
+                });
+            });
+        }
+
+        // Apply the behavior to all videos with the specified class
+        enableReplayOnHover('replay-on-hover');
+    </script>
+
+
+
+</body>
+</html>

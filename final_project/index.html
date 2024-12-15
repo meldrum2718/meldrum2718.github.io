@@ -3,7 +3,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Project 5</title>
+    <title>Final Project</title>
 
   <style>
     body {
@@ -266,6 +266,45 @@
 
             <br>
             <br>
+
+            <hr>
+            <h3> Part 2: The full 3d Situation </h3>
+            Now we use a neural radiance field to represent a 3 dimensional
+            scene. We start with many images of the same scene taken from
+            different angles. We need to know the specific location and camera
+            direction for each image. With this information we can create a map
+            from pixels in the training data to rays in the real 3d space.
+
+            <br>
+            <br>
+
+            To create such a map, we first use the inverse of the intrinsic
+            matrix to map from pixel space to camera coordinates, and then we
+            use the extrinsic matrix (which contains the information about the
+            location and orientation of the camera) to map from camera
+            coordinates to world coordinates.
+
+            <br>
+            <br>
+
+            Now we can compute a ray associated with a pixel by looking at the
+            subspace spanned by the camera location and the pixel location in
+            world coordinates.
+
+            <br>
+            <br>
+
+            We additionally set up a random sampler that produces a random selection of rays from our dataset.
+
+            <br>
+            <div class="image-container">
+              <img src="images/some_sample_rays.png" alt="Image", style="width: 55%">
+              <img src="images/single_camera_rays.png" alt="Image", style="width: 55%">
+            </div>
+            <br>
+
+
+
 
 
         </div>
